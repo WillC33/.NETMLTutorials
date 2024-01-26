@@ -1,6 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-using Microsoft.ML;
-using MLConsole;
+﻿using MLConsole;
 
 // ====================================================================
 // REGRESSION MODEL
@@ -19,9 +17,9 @@ using MLConsole;
 //supportIssueModel.PredictIssue(singleIssue2);
 //supportIssueModel.PredictIssue(singleIssue3);
 
-for(int i = 0; i <= 50; i++)
-{
-    KMeansClustering iris = new();
-}
+// ====================================================================
+// K-Means Clustering
+
+KMeansClustering iris = new();
 
 Console.WriteLine("Exit");

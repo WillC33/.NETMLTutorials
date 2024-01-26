@@ -35,6 +35,7 @@ public class KMeansClustering
         var predictor = _mlContext.Model.CreatePredictionEngine<IrisDataModel, ClusterPrediction>(model);
         var prediction = predictor.Predict(data);
         Console.WriteLine($"Cluster: {prediction.PredictedClusterId}"); // This isn't very accurate and multiple training instances create very different and inconsistent results
+        // I'd like to reimplement this in py as the purported accuracy of a project on the same dataset is 96%
         Console.WriteLine($"Distances: {string.Join(" ", prediction.Distances ?? Array.Empty<float>())}");
     }
 }
