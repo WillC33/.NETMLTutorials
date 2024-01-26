@@ -2,65 +2,15 @@
 using Microsoft.ML;
 using MLConsole;
 
-string _trainDataPath = Path.Combine(Environment.CurrentDirectory, "TrainingData", "taxi-fare-train.csv");
-string _testDataPath = Path.Combine(Environment.CurrentDirectory, "TrainingData", "taxi-fare-test.csv");
-string _modelPath = Path.Combine(Environment.CurrentDirectory, "TrainingData", "Model.zip");
 
-MLContext mlContext = new(seed: 0);
-var model = Train(mlContext, _trainDataPath);
-Evaluate(mlContext, model);
-TestSinglePrediction(mlContext, model);
+//TaxiFareModel taxiFareModel = new();
+SupportIssueModel supportIssueModel = new();
+GitHubIssue singleIssue = new() { Title = "Entity Framework crashes", Description = "When connecting to the database, EF is crashing" };
+GitHubIssue singleIssue2 = new() { Title = "Logging isn't working", Description = "The logs in my output are all blank" };
+GitHubIssue singleIssue3 = new() { Title = "My cookies aren't storing in my browser so the responses are all 401", Description = "When I log in I am redirected to the login screen over and over again. I've looked at the cookies that are being stored and they do not ever appear in my localstorage" };
+
+supportIssueModel.PredictIssue(singleIssue);
+supportIssueModel.PredictIssue(singleIssue2);
+supportIssueModel.PredictIssue(singleIssue3);
 
 Console.WriteLine("Exit");
-
-ITransformer Train(MLContext mlContext, string dataPath)
-{
-    IDataView dataView = mlContext.Data.LoadFromTextFile<TaxiTrip>(dataPath, hasHeader: true, separatorChar: ',');
-    var pipeline = mlContext.Transforms.CopyColumns(outputColumnName: "Label", inputColumnName: "FareAmount")
-        .Append(mlContext.Transforms.Categorical.OneHotEncoding(outputColumnName: "VendorIdEncoded",
-            inputColumnName: "VendorId"))
-        .Append(mlContext.Transforms.Categorical.OneHotEncoding(outputColumnName: "RateCodeEncoded",
-            inputColumnName: "RateCode"))
-        .Append(mlContext.Transforms.Categorical.OneHotEncoding(outputColumnName: "PaymentTypeEncoded",
-            inputColumnName: "PaymentType"))
-        .Append(mlContext.Transforms.Concatenate("Features", "VendorIdEncoded", "RateCodeEncoded", "PassengerCount",
-            "TripDistance", "PaymentTypeEncoded"))
-        .Append(mlContext.Regression.Trainers.FastTree());
-    
-    return pipeline.Fit(dataView);
-}
-
-void Evaluate(MLContext mlContext, ITransformer model)
-{
-    IDataView dataView = mlContext.Data.LoadFromTextFile<TaxiTrip>(_testDataPath, hasHeader: true, separatorChar: ',');
-    var predictions = model.Transform(dataView);
-    var metrics = mlContext.Regression.Evaluate(predictions, "Label", "Score");
-    Console.WriteLine();
-    Console.WriteLine($"*************************************************");
-    Console.WriteLine($"*       Model quality metrics evaluation         ");
-    Console.WriteLine($"*------------------------------------------------");
-    Console.WriteLine($"*       RSquared Score:      {metrics.RSquared:0.##}");
-    Console.WriteLine($"*       Root Mean Squared Error:      {metrics.RootMeanSquaredError:#.##}");
-}
-
-void TestSinglePrediction(MLContext mlContext, ITransformer model)
-{
-    var predictionFunction = mlContext.Model.CreatePredictionEngine<TaxiTrip, TaxiTripFarePrediction>(model);
-    
-    var taxiTripSample = new TaxiTrip()
-    {
-        VendorId = "VTS",
-        RateCode = "1",
-        PassengerCount = 1,
-        TripTime = 1140,
-        TripDistance = 3.75f,
-        PaymentType = "CRD",
-        FareAmount = 0 // To predict. Actual/Observed = 15.5
-    };
-    
-    var prediction = predictionFunction.Predict(taxiTripSample);
-    
-    Console.WriteLine($"**********************************************************************");
-    Console.WriteLine($"Predicted fare: {prediction.FareAmount:0.####}, actual fare: 15.5");
-    Console.WriteLine($"**********************************************************************");
-}

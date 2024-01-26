@@ -13,11 +13,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="TrainingData\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <None Update="TrainingData\taxi-fare-train.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="TrainingData\issues_test.tsv.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="TrainingData\issues_train.tsv.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Outputs\outputs.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
